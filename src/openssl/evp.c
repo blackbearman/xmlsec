@@ -403,9 +403,15 @@ xmlSecOpenSSLEvpKeyAdopt(EVP_PKEY *pKey) {
 #endif /* XMLSEC_NO_GOST2012 */
 
     default:
-        xmlSecInvalidIntegerTypeError("evp key type", EVP_PKEY_base_id(pKey),
-                "supported evp key type", NULL);
-        return(NULL);
+        data = xmlSecKeyDataCreate(xmlSecOpenSSLKeyDataBignId);
+        if(data == NULL) {
+            xmlSecInternalError("xmlSecKeyDataCreate(xmlSecOpenSSLKeyDataBignId)", NULL);
+            return(NULL);
+        }
+        break;
+        //xmlSecInvalidIntegerTypeError("evp key type", EVP_PKEY_base_id(pKey),
+        //        "supported evp key type", NULL);
+        //return(NULL);
     }
 
     xmlSecAssert2(data != NULL, NULL);
@@ -4575,3 +4581,86 @@ xmlSecOpenSSLKeyDataGostR3410_2012_512DebugXmlDump(xmlSecKeyDataPtr data, FILE* 
 }
 
 #endif /* XMLSEC_NO_GOST2012 */
+
+
+static xmlSecKeyDataType
+xmlSecOpenSSLKeyDataBignGetType(xmlSecKeyDataPtr data ATTRIBUTE_UNUSED) {
+    UNREFERENCED_PARAMETER(data);
+
+    /* I don't know how to find whether we have both private and public key
+    or the public only*/
+    return(xmlSecKeyDataTypePublic | xmlSecKeyDataTypePrivate);
+}
+
+static xmlSecSize
+xmlSecOpenSSLKeyDataBignGetSize(xmlSecKeyDataPtr data) {
+
+    return 256;
+}
+
+static void
+xmlSecOpenSSLKeyDataBignDebugDump(xmlSecKeyDataPtr data, FILE* output) {
+    xmlSecAssert(output != NULL);
+
+    fprintf(output, "=== gost key: size = " XMLSEC_SIZE_FMT "\n",
+            xmlSecOpenSSLKeyDataBignGetSize(data));
+}
+
+static void
+xmlSecOpenSSLKeyDataBignDebugXmlDump(xmlSecKeyDataPtr data, FILE* output) {
+    xmlSecAssert(output != NULL);
+
+    fprintf(output, "<BIGNKeyValue size=\"" XMLSEC_SIZE_FMT "\" />\n",
+            xmlSecOpenSSLKeyDataBignGetSize(data));
+}
+
+
+static xmlSecKeyDataKlass xmlSecOpenSSLKeyDataBignKlass = {
+    sizeof(xmlSecKeyDataKlass),
+    xmlSecOpenSSLEvpKeyDataSize,
+
+    /* data */
+    xmlSecNameGostR3410_2012_512KeyValue,
+    xmlSecKeyDataUsageReadFromFile | xmlSecKeyDataUsageKeyValueNode | xmlSecKeyDataUsageRetrievalMethodNodeXml,
+                                        /* xmlSecKeyDataUsage usage; */
+    xmlSecHrefGostR3410_2012_512KeyValue,         /* const xmlChar* href; */
+    xmlSecNodeGostR3410_2012_512KeyValue,         /* const xmlChar* dataNodeName; */
+    xmlSecDSigNs,                       /* const xmlChar* dataNodeNs; */
+
+    /* constructors/destructor */
+    xmlSecOpenSSLEvpKeyDataInitialize,    /* xmlSecKeyDataInitializeMethod initialize; */
+    xmlSecOpenSSLEvpKeyDataDuplicate,     /* xmlSecKeyDataDuplicateMethod duplicate; */
+    xmlSecOpenSSLEvpKeyDataFinalize,      /* xmlSecKeyDataFinalizeMethod finalize; */
+    NULL, /* xmlSecOpenSSLKeyDataGostR3410_2012_512Generate,*/   /* xmlSecKeyDataGenerateMethod generate; */
+
+    /* get info */
+    xmlSecOpenSSLKeyDataBignGetType,       /* xmlSecKeyDataGetTypeMethod getType; */
+    xmlSecOpenSSLKeyDataBignGetSize,       /* xmlSecKeyDataGetSizeMethod getSize; */
+    NULL,                               /* xmlSecKeyDataGetIdentifier getIdentifier; */
+
+    /* read/write */
+    NULL,       /* xmlSecKeyDataXmlReadMethod xmlRead; */
+    NULL,       /* xmlSecKeyDataXmlWriteMethod xmlWrite; */
+    NULL,                               /* xmlSecKeyDataBinReadMethod binRead; */
+    NULL,                               /* xmlSecKeyDataBinWriteMethod binWrite; */
+
+    /* debug */
+    xmlSecOpenSSLKeyDataBignDebugDump,     /* xmlSecKeyDataDebugDumpMethod debugDump; */
+    xmlSecOpenSSLKeyDataBignDebugXmlDump,/* xmlSecKeyDataDebugDumpMethod debugXmlDump; */
+
+    /* reserved for the future */
+    NULL,                               /* void* reserved0; */
+    NULL,                               /* void* reserved1; */
+};
+
+/**
+ * xmlSecOpenSSLKeyDataBignGetKlass:
+ *
+ * The BIGN key data klass.
+ *
+ * Returns: pointer to BIGN key data klass.
+ */
+xmlSecKeyDataId
+xmlSecOpenSSLKeyDataBignGetKlass(void) {
+    return(&xmlSecOpenSSLKeyDataBignKlass);
+}

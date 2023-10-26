@@ -161,6 +161,22 @@ XMLSEC_CRYPTO_EXPORT BIO*               xmlSecOpenSSLCreateReadFileBio (const ch
 
 /********************************************************************
  *
+ * BIGN transforms
+ *
+ *******************************************************************/
+
+/**
+ * xmlSecOpenSSLKeyDataBignId:
+ *
+ * The BIGN key klass.
+ */
+#define xmlSecOpenSSLKeyDataBignId \
+    xmlSecOpenSSLKeyDataBignGetKlass()
+XMLSEC_CRYPTO_EXPORT xmlSecKeyDataId xmlSecOpenSSLKeyDataBignGetKlass(void);
+
+
+/********************************************************************
+ *
  * AES transforms
  *
  *******************************************************************/
