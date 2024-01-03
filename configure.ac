@@ -1,10 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([xmlsec1],[1.3.2],[http://www.aleksey.com/xmlsec])
+AC_INIT([xmlsec1],[1.3.3],[http://www.aleksey.com/xmlsec])
 
 XMLSEC_PACKAGE=xmlsec1
 XMLSEC_VERSION_MAJOR=1
 XMLSEC_VERSION_MINOR=3
-XMLSEC_VERSION_SUBMINOR=2
+XMLSEC_VERSION_SUBMINOR=3
 XMLSEC_VERSION="$XMLSEC_VERSION_MAJOR.$XMLSEC_VERSION_MINOR.$XMLSEC_VERSION_SUBMINOR"
 XMLSEC_VERSION_INFO=`echo $XMLSEC_VERSION | awk -F. '{ printf "%d:%d:%d", $1+$2, $3, $2 }'`
 XMLSEC_VERSION_SAFE=`echo $XMLSEC_VERSION | sed 's/\./_/g'`
@@ -304,28 +304,6 @@ AC_DEFUN([AX_FIND_FOLDER],[
         fi
     done
 ])
-
-dnl ==========================================================================
-dnl check do we have size_t and its size,
-dnl TODO: will need to replace this and the xmlSecSize define with
-dnl typedef on next ABI refresh
-dnl ==========================================================================
-AC_CHECK_SIZEOF(size_t)
-
-XMLSEC_USE_SIZE_T="no"
-AC_ARG_ENABLE([size-t], [AS_HELP_STRING([--enable-size-t],[enable xmsSecSize typedef to size_t (yes)])])
-AC_MSG_CHECKING(for using size_t)
-if test "z$enable_size_t" = "zno" ; then
-    XMLSEC_USE_SIZE_T="no"
-    AC_MSG_RESULT([no (deprecated)])
-else
-    XMLSEC_USE_SIZE_T="yes"
-    AC_MSG_RESULT([yes])
-fi
-
-if test "z$XMLSEC_USE_SIZE_T" != "zyes" -a "$ac_cv_sizeof_size_t" -ne "4" ; then
-    XMLSEC_DEFINES="$XMLSEC_DEFINES -DXMLSEC_NO_SIZE_T"
-fi
 
 dnl ==========================================================================
 dnl find libxml
@@ -694,7 +672,7 @@ XMLSEC_CRYPTO_DISABLED_LIST=""
 dnl ==========================================================================
 dnl OpenSSL
 dnl ==========================================================================
-OPENSSL_MIN_VERSION="1.1.0"
+OPENSSL_MIN_VERSION="1.1.1"
 OPENSSL_INCLUDE_DIR="$COMMON_INCLUDE_DIR /usr/local/ssl/include"
 OPENSSL_LIB_DIR="$COMMON_LIB_DIR /usr/local/ssl/lib /usr/local/ssl/lib64"
 OPENSSL_CRYPTO_LIB="$XMLSEC_PACKAGE-openssl"
@@ -702,16 +680,6 @@ OPENSSL_INCLUDE_MARKER="openssl/opensslv.h"
 OPENSSL_LIB_SHARED_MARKER="libcrypto$shrext"
 OPENSSL_LIB_STATIC_MARKER="libcrypto.a"
 OPENSSL_LIBS_LIST="-lcrypto"
-case $host in
-    *-*-mingw*)   OPENSSL_EXTRA_LIBS=;;
-    *-*-osf5*)    OPENSSL_EXTRA_LIBS=;;
-    *-*-openbsd*) OPENSSL_EXTRA_LIBS=;;
-    *-*-netbsd*)  OPENSSL_EXTRA_LIBS=;;
-    *-*-freebsd*|*-*-dragonfly*) OPENSSL_EXTRA_LIBS=;;
-    *-*-darwin*) OPENSSL_EXTRA_LIBS=;;
-    #FIXME: check if lib "dl" is required
-    *)            OPENSSL_EXTRA_LIBS=-ldl;;
-esac
 
 XMLSEC_NO_OPENSSL="1"
 OPENSSL_VERSION=""
@@ -813,7 +781,7 @@ fi
 
 dnl Set flags if INCLUDE_PATH or LIB_PATH are set
 if test "z$OPENSSL_FOUND" = "zyes" -a "z$OPENSSL_INCLUDE_PATH" != "z" ; then
-    OPENSSL_CFLAGS="$OPENSSL_CFLAGS -I$OPENSSL_INCLUDE_PATH -I$OPENSSL_INCLUDE_PATH/openssl"
+    OPENSSL_CFLAGS="$OPENSSL_CFLAGS -I$OPENSSL_INCLUDE_PATH"
 fi
 if test "z$OPENSSL_FOUND" = "zyes" -a "z$OPENSSL_LIB_PATH" != "z" ; then
     if test -f "$OPENSSL_LIB_PATH/$OPENSSL_LIB_SHARED_MARKER" ; then
@@ -838,6 +806,8 @@ if test "z$OPENSSL_FOUND" = "zyes" ; then
             #endif
         ],[
             OPENSSL_VERSION="LibreSSL >= 3.5"
+            OPENSSL_LIBS="-Wl,-Bstatic $OPENSSL_LIBS -Wl,-Bdynamic"
+            enable_dh=no
         ],[
             OPENSSL_VERSION=""
         ])
@@ -847,15 +817,18 @@ if test "z$OPENSSL_FOUND" = "zyes" ; then
         AC_EGREP_CPP(greater-than-minvers, [
             #include <openssl/opensslv.h>
             #include <openssl/crypto.h>
-            #if OPENSSL_VERSION_NUMBER >= 0x10100000L
+            #if OPENSSL_VERSION_NUMBER >= 0x10100010L
             #ifdef OPENSSL_IS_BORINGSSL
             greater-than-minvers
             #endif
             #endif
         ],[
-            OPENSSL_VERSION="BoringSSL >= 1.1.0"
+            OPENSSL_VERSION="BoringSSL >= 1.1.1"
+            OPENSSL_LIBS="-Wl,-Bstatic $OPENSSL_LIBS -Wl,-Bdynamic"
             enable_ripemd160=no
             enable_dsa=no
+            enable_dh=no
+            enable_sha3=no
         ],[
             OPENSSL_VERSION=""
         ])
@@ -878,11 +851,11 @@ if test "z$OPENSSL_FOUND" = "zyes" ; then
     if test "z$OPENSSL_VERSION" = "z" ; then
         AC_EGREP_CPP(greater-than-minvers, [
             #include <openssl/opensslv.h>
-            #if OPENSSL_VERSION_NUMBER >= 0x10100000L
+            #if OPENSSL_VERSION_NUMBER >= 0x10100010L
             greater-than-minvers
             #endif
         ],[
-            OPENSSL_VERSION="1.1.0"
+            OPENSSL_VERSION="1.1.1"
         ],[
             OPENSSL_VERSION=""
         ])
@@ -964,7 +937,7 @@ NSPR_LIB_MARKER="libnspr4$shrext"
 NSPR_LIBS_LIST="-lnspr4 -lplds4 -lplc4"
 NSS_INCLUDE_MARKER="nss/nss.h"
 NSS_LIB_MARKER="libnss3$shrext"
-NSS_LIBS_LIST="-lnss3 -lsmime3"
+NSS_LIBS_LIST="-lnss3 -lsmime3 -lnssutil3"
 
 XMLSEC_NO_NSS="1"
 NSPR_INCLUDE_PATH=

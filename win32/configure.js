@@ -50,13 +50,11 @@ var withMSCrypto = 0;
 var withMSCng = 0;
 var withLibXSLT = 1;
 var withIconv = 1;
-var withSizeT = 1;
 var withFTP = 0; /* disable ftp by default */
 var withHTTP = 1;
 var withLegacyCrypto = 0;
 
 /* Win32 build options. */
-var withNT4 = 0;
 var buildUnicode = 1;
 var buildDebug = 0;
 var buildWithMemcheck = 0;
@@ -116,17 +114,15 @@ function usage()
 	txt += "either 'yes' or 'no'.\n\n";
 	txt += "XmlSec Library options, default value given in parentheses:\n\n";
 	txt += "  crypto:     Crypto engines list, first is default: \"openssl\",\n";
-	txt += "              \"openssl=100\", \"openssl=100\", \"openssl=110\",\n";
-	txt += "              \"openssl-110\", \"openssl=300\", \"openssl-300\",\n";
-	txt += "              \"nss\", \"mscrypto\", \"mscng\" (\"" + withCrypto + "\");\n"
+	txt += "              \"openssl=111\", \"openssl-111\", \"openssl=300\",\n";
+	txt += "              \"openssl-300\", \"nss\", \"mscrypto\", \"mscng\"\n";
+	txt += "              (\"" + withCrypto + "\");\n"
  	txt += "  xslt:       LibXSLT is used (" + (withLibXSLT? "yes" : "no")  + ")\n";
  	txt += "  iconv:      Use the iconv library (" + (withIconv? "yes" : "no")  + ")\n";
-	txt += "  size_t:     Use the size_t (" + (withSizeT ? "yes" : "no") + ")\n";
 	txt += "  ftp:        Enable FTP support (" + (withFTP ? "yes" : "no") + ")\n";
 	txt += "  http:       Enable HTTP support (" + (withHTTP ? "yes" : "no") + ")\n";
 	txt += "  legacy - crypto:  Use the size_t (" + (withLegacyCrypto ? "yes" : "no") + ")\n";
 	txt += "\nWin32 build options, default value given in parentheses:\n\n";
-	txt += "  nt4:        Enable NT 4.0 support (" + (withNT4 ? "yes" : "no") + ")\n";
 	txt += "  unicode:    Build Unicode version (" + (buildUnicode? "yes" : "no")  + ")\n";
 	txt += "  debug:      Build unoptimised debug executables (" + (buildDebug? "yes" : "no")  + ")\n";
 	txt += "  memcheck:   Build unoptimised debug executables with memcheck reporting (" + (buildWithMemcheck ? "yes" : "no") + ")\n";
@@ -150,7 +146,7 @@ function usage()
 	txt += "  lib:        Additional search path for the linker, particularily\n";
 	txt += "              where libxml library can be found (" + buildLib + ")\n";
 	txt += "\nCrypto options, default value given in parentheses:\n\n";
-	txt += "  with-openssl3-engines:    Enable dynamic loading of xmlsec-crypto libraries (" + (withOpenSSL3Engines ? "yes" : "no") + ")\n";	
+	txt += "  with-openssl3-engines:    Enable dynamic loading of xmlsec-crypto libraries (" + (withOpenSSL3Engines ? "yes" : "no") + ")\n";
 	WScript.Echo(txt);
 }
 
@@ -197,11 +193,9 @@ function discoverVersion()
 	vf.WriteLine("WITH_MSCNG=" + withMSCng);
 	vf.WriteLine("WITH_LIBXSLT=" + (withLibXSLT ? "1" : "0"));
 	vf.WriteLine("WITH_ICONV=" + (withIconv ? "1" : "0"));
-	vf.WriteLine("WITH_SIZE_T=" + (withSizeT ? "1" : "0"));
 	vf.WriteLine("WITH_FTP=" + (withFTP ? "1" : "0"));
 	vf.WriteLine("WITH_HTTP=" + (withHTTP ? "1" : "0"));
 	vf.WriteLine("WITH_LEGACY_CRYPTO=" + (withLegacyCrypto ? "1" : "0"));
-	vf.WriteLine("WITH_NT4=" + (withNT4 ? "1" : "0"));
 	vf.WriteLine("UNICODE=" + (buildUnicode? "1" : "0"));
 	vf.WriteLine("DEBUG=" + (buildDebug? "1" : "0"));
 	vf.WriteLine("MEMCHECK=" + (buildWithMemcheck ? "1" : "0"));
@@ -336,16 +330,12 @@ for (i = 0; (i < WScript.Arguments.length) && (error == 0); i++) {
 			withLibXSLT = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "iconv")
 			withIconv = strToBool(arg.substring(opt.length + 1, arg.length));
-		else if (opt == "size_t")
-			withSizeT = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "ftp")
 			withFTP = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "http")
 			withHTTP = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "legacy-crypto")
 			withLegacyCrypto = strToBool(arg.substring(opt.length + 1, arg.length));
-		else if (opt == "nt4")
-			withNT4 = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "unicode")
 			buildUnicode = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "debug")
@@ -422,15 +412,15 @@ for (j = 0; j < crlist.length; j++) {
 	if (crlist[j] == "openssl") {
 		curcrypto="openssl";
 		withOpenSSL = 1;
-		withOpenSSLVersion = "110"; /* default */
-	} else if (crlist[j] == "openssl=110" || crlist[j] == "openssl-110") {
-		curcrypto="openssl";
-		withOpenSSL = 1;
-		withOpenSSLVersion = "110";
+		withOpenSSLVersion = "300"; /* default */
 	} else if (crlist[j] == "openssl=300" || crlist[j] == "openssl-300") {
-		curcrypto="openssl";
+		curcrypto = "openssl";
 		withOpenSSL = 1;
 		withOpenSSLVersion = "300";
+	} else if (crlist[j] == "openssl=111" || crlist[j] == "openssl-111") {
+		curcrypto="openssl";
+		withOpenSSL = 1;
+		withOpenSSLVersion = "111";
 	} else if (crlist[j] == "nss") {
 		curcrypto="nss";
 		withNss = 1;
@@ -488,14 +478,12 @@ txtOut += "       Use MSCrypto: " + boolToStr(withMSCrypto) + "\n";
 txtOut += "          Use MSCng: " + boolToStr(withMSCng) + "\n";
 txtOut += "        Use LibXSLT: " + boolToStr(withLibXSLT) + "\n";
 txtOut += "          Use iconv: " + boolToStr(withIconv) + "\n";
-txtOut += "         Use size_t: " + boolToStr(withSizeT) + "\n";
 txtOut += "  Use legacy crypto: " + boolToStr(withLegacyCrypto) + "\n";
 txtOut += "        Support FTP: " + boolToStr(withFTP) + "\n";
 txtOut += "       Support HTTP: " + boolToStr(withHTTP) + "\n";
 txtOut += "\n";
 txtOut += "Win32 build configuration\n";
 txtOut += "-------------------------\n";
-txtOut += "     NT 4.0 support: " + boolToStr(withNT4) + "\n";
 txtOut += "  C-Runtime option: " + cruntime + "\n";
 txtOut += "           Unicode: " + boolToStr(buildUnicode) + "\n";
 txtOut += "     Debug symbols: " + boolToStr(buildDebug) + "\n";

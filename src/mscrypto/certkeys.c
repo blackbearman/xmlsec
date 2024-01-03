@@ -18,6 +18,7 @@
 #include "globals.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 #ifndef XMLSEC_NO_GOST
 #include "csp_oid.h"
@@ -40,12 +41,10 @@
 #include "../cast_helpers.h"
 #include "../keysdata_helpers.h"
 
-// GOST CSP don't support keys duplicating, so we use NT4 analogs for these...
+// GOST CSP don't support keys duplicating, so we use custom refcounting instead
 #ifndef XMLSEC_NO_GOST
-#ifndef XMLSEC_MSCRYPTO_NT4
-#define XMLSEC_MSCRYPTO_NT4
-#endif
-#endif
+#define XMLSEC_MSCRYPTO_CUSTOM_REFCOUNT
+#endif  /* XMLSEC_NO_GOST */
 
 #define XMLSEC_MSCRYPTO_DSA_MAX_Q_SIZE     ((xmlSecSize)0x14U)
 
@@ -57,7 +56,7 @@
 typedef struct _xmlSecMSCryptoKeyDataCtx xmlSecMSCryptoKeyDataCtx,
                                                 *xmlSecMSCryptoKeyDataCtxPtr;
 
-#ifdef XMLSEC_MSCRYPTO_NT4
+#ifdef XMLSEC_MSCRYPTO_CUSTOM_REFCOUNT
 /*-
  * A wrapper of HCRYPTKEY, a reference counter is introduced, the function is
  * the same as CryptDuplicateKey. Because the CryptDuplicateKey is not support
@@ -78,7 +77,7 @@ struct _mscrypt_prov {
         BOOL fCallerFreeProv ;
         volatile LONG refcnt ;
 } ;
-#endif /* XMLSEC_MSCRYPTO_NT4 */
+#endif /* XMLSEC_MSCRYPTO_CUSTOM_REFCOUNT */
 
 /*
  * Since MSCrypto does not provide direct handles to private keys, we support
@@ -88,21 +87,21 @@ struct _mscrypt_prov {
  * now is however directed to certificates.  Wouter
  */
 struct _xmlSecMSCryptoKeyDataCtx {
-#ifndef XMLSEC_MSCRYPTO_NT4
+#ifndef XMLSEC_MSCRYPTO_CUSTOM_REFCOUNT
     HCRYPTPROV                          hProv;
     BOOL                                fCallerFreeProv;
     HCRYPTKEY                           hKey;
-#else /* XMLSEC_MSCRYPTO_NT4 */
+#else /* XMLSEC_MSCRYPTO_CUSTOM_REFCOUNT */
     struct _mscrypt_prov*               p_prov ;
     struct _mscrypt_key*                p_key ;
-#endif /* XMLSEC_MSCRYPTO_NT4 */
+#endif /* XMLSEC_MSCRYPTO_CUSTOM_REFCOUNT */
     PCCERT_CONTEXT                      pCert;
     const xmlSecMSCryptoProviderInfo  * providers;
     DWORD                               dwKeySpec;
     xmlSecKeyDataType   type;
 };
 
-#ifndef XMLSEC_MSCRYPTO_NT4
+#ifndef XMLSEC_MSCRYPTO_CUSTOM_REFCOUNT
 
 /******************************** Provider *****************************************/
 #define xmlSecMSCryptoKeyDataCtxGetProvider(ctx)            (ctx)->hProv
@@ -204,7 +203,7 @@ xmlSecMSCryptoKeyDataCtxDuplicateKey(xmlSecMSCryptoKeyDataCtxPtr ctxDst, xmlSecM
     return(0);
 }
 
-#else /* XMLSEC_MSCRYPTO_NT4 */
+#else /* XMLSEC_MSCRYPTO_CUSTOM_REFCOUNT */
 
 /******************************** Provider *****************************************/
 #define xmlSecMSCryptoKeyDataCtxGetProvider(ctx)            (((ctx)->p_prov) ? ((ctx)->p_prov->hProv) : 0)
@@ -351,7 +350,7 @@ xmlSecMSCryptoKeyDataCtxDuplicateKey(xmlSecMSCryptoKeyDataCtxPtr ctxDst, xmlSecM
     return(0);
 }
 
-#endif /* XMLSEC_MSCRYPTO_NT4 */
+#endif /* XMLSEC_MSCRYPTO_CUSTOM_REFCOUNT */
 
 /******************************** Cert *****************************************/
 #define xmlSecMSCryptoKeyDataCtxGetCert(ctx)            ((ctx)->pCert)

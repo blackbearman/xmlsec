@@ -364,8 +364,12 @@ xmlSecCryptoGetFunctions_openssl(void) {
 #endif /* XMLSEC_NO_SHA3 */
 
     gXmlSecOpenSSLFunctions->transformRsaPkcs1GetKlass          = xmlSecOpenSSLTransformRsaPkcs1GetKlass;
+
+#ifndef XMLSEC_OPENSSL_NO_RSA_OAEP
     gXmlSecOpenSSLFunctions->transformRsaOaepGetKlass           = xmlSecOpenSSLTransformRsaOaepGetKlass;
     gXmlSecOpenSSLFunctions->transformRsaOaepEnc11GetKlass      = xmlSecOpenSSLTransformRsaOaepEnc11GetKlass;
+#endif /* XMLSEC_OPENSSL_NO_RSA_OAEP */
+
 #endif /* XMLSEC_NO_RSA */
 
     /******************************* SHA ********************************/
@@ -419,7 +423,6 @@ xmlSecCryptoGetFunctions_openssl(void) {
     gXmlSecOpenSSLFunctions->cryptoAppKeyCertLoad               = xmlSecOpenSSLAppKeyCertLoad;
     gXmlSecOpenSSLFunctions->cryptoAppKeyCertLoadMemory         = xmlSecOpenSSLAppKeyCertLoadMemory;
 #endif /* XMLSEC_NO_X509 */
-    gXmlSecOpenSSLFunctions->cryptoAppKeyLoad                   = xmlSecOpenSSLAppKeyLoad;
     gXmlSecOpenSSLFunctions->cryptoAppKeyLoadEx                 = xmlSecOpenSSLAppKeyLoadEx;
     gXmlSecOpenSSLFunctions->cryptoAppKeyLoadMemory             = xmlSecOpenSSLAppKeyLoadMemory;
     gXmlSecOpenSSLFunctions->cryptoAppDefaultPwdCallback        = (void*)xmlSecOpenSSLAppGetDefaultPwdCallback();

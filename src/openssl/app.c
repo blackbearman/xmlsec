@@ -46,7 +46,10 @@
 #include <openssl/engine.h>
 #include <openssl/x509_vfy.h>
 #include <openssl/x509.h>
+
+#ifndef OPENSSL_IS_BORINGSSL
 #include <openssl/ui.h>
+#endif /* OPENSSL_IS_BORINGSSL */
 
 #ifndef XMLSEC_OPENSSL_NO_STORE
 #include <openssl/store.h>
@@ -184,27 +187,6 @@ int
 xmlSecOpenSSLAppShutdown(void) {
     /* OpenSSL 1.1.0+ does not require explicit cleanup */
     return(0);
-}
-
-
-/**
- * xmlSecOpenSSLAppKeyLoad:
- * @filename:           the key filename.
- * @format:             the key file format.
- * @pwd:                the key file password.
- * @pwdCallback:        the key password callback.
- * @pwdCallbackCtx:     the user context for password callback.
- *
- * Deprecated, use @xmlSecOpenSSLAppKeyLoadEx function instead. Reads key from the a file.
- *
- * Returns: pointer to the key or NULL if an error occurs.
- */
-xmlSecKeyPtr
-xmlSecOpenSSLAppKeyLoad(const char *filename, xmlSecKeyDataFormat format,
-                        const char *pwd, void* pwdCallback,
-                        void* pwdCallbackCtx) {
-    return(xmlSecOpenSSLAppKeyLoadEx(filename, xmlSecKeyDataTypeUnknown, format,
-        pwd, pwdCallback, pwdCallbackCtx));
 }
 
 /**
@@ -771,6 +753,7 @@ xmlSecOpenSSLAppCheckCertMatchesKey(EVP_PKEY * pKey,  X509 * cert) {
     return(1);
 }
 
+#if !defined(XMLSEC_OPENSSL_NO_STORE)
 static X509 *
 xmlSecOpenSSLAppFindKeyCert(EVP_PKEY * pKey, STACK_OF(X509) * certs) {
     X509 * cert;
@@ -804,6 +787,8 @@ xmlSecOpenSSLAppFindKeyCert(EVP_PKEY * pKey, STACK_OF(X509) * certs) {
     /* not found */
     return(NULL);
 }
+#endif /* !defined(XMLSEC_OPENSSL_NO_STORE) */
+
 #endif /* XMLSEC_NO_X509 */
 
 static xmlSecKeyPtr
@@ -907,7 +892,6 @@ xmlSecOpenSSLAppStoreKeyLoad(const char *uri, xmlSecKeyDataType type, const char
             ret = sk_X509_push(certs, cert);
             if(ret <= 0) {
                 xmlSecOpenSSLError("sk_X509_push", NULL);
-                X509_free(cert);
                 goto done;
             }
             cert = NULL; /* owned by certs now */
@@ -957,6 +941,9 @@ xmlSecOpenSSLAppStoreKeyLoad(const char *uri, xmlSecKeyDataType type, const char
     /* success! */
 
 done:
+    if(cert != NULL) {
+        X509_free(cert);
+    }
     if(pPrivKey != NULL) {
         EVP_PKEY_free(pPrivKey);
     }

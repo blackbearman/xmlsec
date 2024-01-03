@@ -191,7 +191,14 @@ else
     diff_param=-u
 fi
 
+#
+# NSS specific:
+# - Cert name we need to delete for tests to work
+# - Ignore NSS system policies in tests since we have legacy algorithms and small key sizes
+#
 NSS_TEST_CERT_NICKNAME="NSS Certificate DB:Aleksey Sanin - XML Security Library (http://www.aleksey.com/xmlsec)"
+export NSS_IGNORE_SYSTEM_POLICY=1
+
 
 cleanupNssCerts() {
     echo "certutil  -D -n \"$NSS_TEST_CERT_NICKNAME\" -d \"$crypto_config_folder\""  >> $logfile
@@ -346,7 +353,7 @@ execKeysTest() {
         fi
 
         # only openssl supports --privkey-openssl-store
-        if [ "z$crypto" = "zopenssl" -a "z$xmlsec_openssl_flavor" != "zlibressl" ] ; then
+        if [ "z$crypto" = "zopenssl" -a "z$xmlsec_openssl_flavor" != "zlibressl" -a "z$xmlsec_openssl_flavor" != "zboringssl" ] ; then
             printf "    Reading private key from pkcs12 file using ossl-store "
             rm -f $tmpfile
             params="--lax-key-search --privkey-openssl-store $privkey_file.p12 $pkcs12_key_extra_options $key_test_options --output $tmpfile $asym_key_test.tmpl"
@@ -415,7 +422,7 @@ execKeysTest() {
     # test reading public keys
     if [ -n "$pubkey_file" -a -n "$asym_key_test" ]; then
         # only openssl supports --pubkey-openssl-store
-        if [ "z$crypto" = "zopenssl" -a "z$xmlsec_openssl_flavor" != "zlibressl" ] ; then
+        if [ "z$crypto" = "zopenssl" -a "z$xmlsec_openssl_flavor" != "zlibressl" -a "z$xmlsec_openssl_flavor" != "zboringssl" ] ; then
             printf "    Reading public key from pem file using ossl-store     "
             rm -f $tmpfile
             params="--lax-key-search --pubkey-openssl-store $pubkey_file.pem $key_test_options $asym_key_test.xml"

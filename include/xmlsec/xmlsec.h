@@ -12,6 +12,7 @@
 #define __XMLSEC_H__
 
 #include <libxml/tree.h>
+#include <libxml/parser.h>
 
 #include <xmlsec/version.h>
 #include <xmlsec/exports.h>
@@ -53,17 +54,12 @@ typedef void*                                   xmlSecPtr;
  *
  * Size of something.
  */
-#ifdef XMLSEC_NO_SIZE_T
-#define xmlSecSize                              unsigned int
-#define XMLSEC_SIZE_MAX                         UINT_MAX
-#define XMLSEC_SIZE_FMT                         "%u"
-#else  /* XMLSEC_NO_SIZE_T */
+
 typedef size_t xmlSecSize;
 #define xmlSecSize                              size_t
+#define XMLSEC_SIZE_MIN                         ((xmlSecSize)0)
 #define XMLSEC_SIZE_MAX                         SIZE_MAX
 #define XMLSEC_SIZE_FMT                         XMLSEC_SIZE_T_FMT
-#endif /* XMLSEC_NO_SIZE_T */
-#define XMLSEC_SIZE_MIN                         ((xmlSecSize)0)
 
 /**
  * xmlSecByte:
