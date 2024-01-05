@@ -212,6 +212,22 @@ const xmlChar xmlSecHrefKWDes3[]                = "http://www.w3.org/2001/04/xml
 
 /*************************************************************************
  *
+ * BIGN strings
+ *
+ ************************************************************************/
+const xmlChar xmlSecNameBelt[]                          = "belt";
+const xmlChar xmlSecHrefBelt[]                          = "http://www.w3.org/2009/xmldsig11#belt-hash256";
+
+const xmlChar xmlSecNameBignKeyValue[]                  = "bign-key";
+const xmlChar xmlSecNodeBignKeyValue[]                  = "bignKeyValue";
+const xmlChar xmlSecHrefBignKeyValue[]                  = "http://www.w3.org/2009/xmldsig11#bign-256";
+
+const xmlChar xmlSecNameBignBelt[]                      = "bign-belt";
+const xmlChar xmlSecNodeBignBelt[]                      = "bign-belt";
+const xmlChar xmlSecHrefBignBelt[]                      = "http://www.w3.org/2009/xmldsig11#bign-with-hbelt";
+
+/*************************************************************************
+ *
  * GOST2001 strings
  *
  ************************************************************************/

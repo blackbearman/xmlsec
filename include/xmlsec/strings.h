@@ -318,6 +318,22 @@ XMLSEC_EXPORT_VAR const xmlChar xmlSecHrefEcdsaSha3_512[];
 
 /*************************************************************************
  *
+ * BIGN strings
+ *
+ ************************************************************************/
+XMLSEC_EXPORT_VAR const xmlChar xmlSecNameBelt[];
+XMLSEC_EXPORT_VAR const xmlChar xmlSecHrefBelt[];
+
+XMLSEC_EXPORT_VAR const xmlChar xmlSecNameBignKeyValue[];
+XMLSEC_EXPORT_VAR const xmlChar xmlSecNodeBignKeyValue[];
+XMLSEC_EXPORT_VAR const xmlChar xmlSecHrefBignKeyValue[];
+
+XMLSEC_EXPORT_VAR const xmlChar xmlSecNameBignBelt[];
+XMLSEC_EXPORT_VAR const xmlChar xmlSecNodeBignBelt[];
+XMLSEC_EXPORT_VAR const xmlChar xmlSecHrefBignBelt[];
+
+/*************************************************************************
+ *
  * GOST2001 strings
  *
  ************************************************************************/
