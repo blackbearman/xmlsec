@@ -220,7 +220,7 @@ const xmlChar xmlSecHrefBelt[]                          = "http://www.w3.org/200
 
 const xmlChar xmlSecNameBignKeyValue[]                  = "bign-pubkey";
 const xmlChar xmlSecNodeBignKeyValue[]                  = "bign-pubkey";
-const xmlChar xmlSecHrefBignKeyValue[]                  = "http://www.w3.org/2009/xmldsig11#bign;
+const xmlChar xmlSecHrefBignKeyValue[]                  = "http://www.w3.org/2009/xmldsig11#bign";
 
 const xmlChar xmlSecNameBignBelt[]                      = "bign-with-hbelt";
 const xmlChar xmlSecNodeBignBelt[]                      = "bign-with-hbelt";

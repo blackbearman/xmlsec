@@ -1,5 +1,5 @@
   source autogen.sh
-  ./configure
+  ./configure --enable-openssl3-engines
   make
   make check
   make install
