@@ -633,7 +633,7 @@ xmlSecCryptoDLFunctionsRegisterKeyDataAndTransforms(struct _xmlSecCryptoDLFuncti
 
     XMLSEC_REGISTER_TRANSFORM(KWDes3);                              // transformKWDes3GetKlass
 
-    XMLSEC_REGISTER_TRANSFORM(BignBelt);                            // transformBignBeltGetKlass
+    //XMLSEC_REGISTER_TRANSFORM(BignBelt);                            // transformBignBeltGetKlass
     
     XMLSEC_REGISTER_TRANSFORM(Gost2001GostR3411_94);                // transformGost2001GostR3411_94GetKlass
     XMLSEC_REGISTER_TRANSFORM(GostR3410_2012GostR3411_2012_256);    // transformGostR3410_2012GostR3411_2012_256GetKlass
@@ -721,7 +721,7 @@ xmlSecCryptoDLFunctionsRegisterKeyDataAndTransforms(struct _xmlSecCryptoDLFuncti
     XMLSEC_REGISTER_TRANSFORM(Sha3_384);                            // transformSha3_384GetKlass
     XMLSEC_REGISTER_TRANSFORM(Sha3_512);                            // transformSha3_512GetKlass
 
-    XMLSEC_REGISTER_TRANSFORM(Belt);                                // transformBeltGetKlass
+    //XMLSEC_REGISTER_TRANSFORM(Belt);                                // transformBeltGetKlass
     /* done */
     return(0);
 }

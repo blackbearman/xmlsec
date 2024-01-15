@@ -18,6 +18,8 @@
  * distribution for preciese wording.
  *
  * Copyright (C) 2002-2022 Aleksey Sanin <aleksey@aleksey.com>. All Rights Reserved.
+ * 
+ * xmlsec1 --sign --crypto openssl --privkey-openssl-engine "bee2evp;privkey.pem" sign2-doc.xml
  */
 #define XMLSEC_CRYPTO_OPENSSL
 #include <stdlib.h>
