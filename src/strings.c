@@ -215,15 +215,15 @@ const xmlChar xmlSecHrefKWDes3[]                = "http://www.w3.org/2001/04/xml
  * BIGN strings
  *
  ************************************************************************/
-const xmlChar xmlSecNameBelt[]                          = "belt";
-const xmlChar xmlSecHrefBelt[]                          = "http://www.w3.org/2009/xmldsig11#belt-hash256";
+const xmlChar xmlSecNameBelt[]                          = "belt-hash";
+const xmlChar xmlSecHrefBelt[]                          = "http://www.w3.org/2009/xmldsig11#belt-hash";
 
-const xmlChar xmlSecNameBignKeyValue[]                  = "bign-key";
-const xmlChar xmlSecNodeBignKeyValue[]                  = "bignKeyValue";
-const xmlChar xmlSecHrefBignKeyValue[]                  = "http://www.w3.org/2009/xmldsig11#bign-256";
+const xmlChar xmlSecNameBignKeyValue[]                  = "bign-pubkey";
+const xmlChar xmlSecNodeBignKeyValue[]                  = "bign-pubkey";
+const xmlChar xmlSecHrefBignKeyValue[]                  = "http://www.w3.org/2009/xmldsig11#bign;
 
-const xmlChar xmlSecNameBignBelt[]                      = "bign-belt";
-const xmlChar xmlSecNodeBignBelt[]                      = "bign-belt";
+const xmlChar xmlSecNameBignBelt[]                      = "bign-with-hbelt";
+const xmlChar xmlSecNodeBignBelt[]                      = "bign-with-hbelt";
 const xmlChar xmlSecHrefBignBelt[]                      = "http://www.w3.org/2009/xmldsig11#bign-with-hbelt";
 
 /*************************************************************************
